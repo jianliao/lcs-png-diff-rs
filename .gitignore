@@ -3,4 +3,4 @@
 /bin
 /dist
 **/*_result.png
-.vscode
+.vscode/
