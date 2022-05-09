@@ -10,5 +10,9 @@
   {
     "before": "/Users/jianliao/Work/scm/github/lcs-png-diff-rs/tests/fixtures/text-area_before.png",
     "after": "/Users/jianliao/Work/scm/github/lcs-png-diff-rs/tests/fixtures/text-area_after.png"
+  },
+  {
+    "before": "/Users/jianliao/Work/scm/github/lcs-png-diff-rs/tests/fixtures/home_before.png",
+    "after": "/Users/jianliao/Work/scm/github/lcs-png-diff-rs/tests/fixtures/home_after.png"
   }
 ]
