@@ -1,0 +1,29 @@
+[package]
+name = "lcs-png-diff-rs"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "lcs_png_diff"
+path = "src/lib.rs"
+
+[[bin]]
+name = "lcs-png-diff"
+path = "src/main.rs"
+required-features = ["binary"]
+
+[features]
+default = ["binary"]
+binary = ["all_image_formats"]
+all_image_formats = ["image/png"]
+
+[dependencies]
+base64 = "0.13.0"
+clap = { version = "3.1.12", features = ["derive"] }
+image = { version = "0.24.2", default-features = false }
+lcs-diff = "0.1.1"
+rusty_pool = { version = "0.7.0", default-features = false }
+serde = { version = "1.0.137", features = ["derive"] }
+serde_json = "1.0.81"
