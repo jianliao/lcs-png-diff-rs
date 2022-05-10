@@ -13,14 +13,14 @@ pub static GREEN: (u8, u8, u8) = (99, 195, 99);
 static RATE: f32 = 0.25;
 
 #[derive(Debug, PartialEq)]
-enum DiffResult<'a, T: 'a + PartialEq> {
+enum DiffResult<'a, T: PartialEq> {
     Removed(DiffElement<'a, T>),
     Common(DiffElement<'a, T>),
     Added(DiffElement<'a, T>),
 }
 
 #[derive(Debug, PartialEq)]
-struct DiffElement<'a, T: 'a + PartialEq> {
+struct DiffElement<'a, T: PartialEq> {
     pub old_index: Option<usize>,
     pub new_index: Option<usize>,
     pub data: &'a T,
@@ -45,7 +45,7 @@ fn create_table<T: PartialEq>(old: &[T], new: &[T]) -> Vec<Vec<u32>> {
     table
 }
 
-fn lcs_diff<'a, T: 'a + PartialEq>(old: &'a [T], new: &'a [T]) -> Vec<DiffResult<'a, T>> {
+fn lcs_diff<'a, T: PartialEq>(old: &'a [T], new: &'a [T]) -> Vec<DiffResult<'a, T>> {
     let mut result: Vec<DiffResult<T>> = Vec::new();
     let new_len = new.len();
     let old_len = old.len();
@@ -207,13 +207,13 @@ pub fn diff(
         .as_bytes()
         .to_vec()
         .chunks(before_w as usize * 4)
-        .map(|chunk| encode(chunk))
+        .map(encode)
         .collect();
     let after_encoded_png: Vec<String> = after_png
         .as_bytes()
         .to_vec()
         .chunks(after_w as usize * 4)
-        .map(|chunk| encode(chunk))
+        .map(encode)
         .collect();
 
     let diff_result: Vec<DiffResult<String>> = lcs_diff(&before_encoded_png, &after_encoded_png);
@@ -223,13 +223,13 @@ pub fn diff(
     let mut img: ImageBuffer<Rgba<u8>, Vec<u8>> = ImageBuffer::new(width, height);
     for (y, d) in diff_result.iter().enumerate() {
         match d {
-            &DiffResult::Added(ref a) => {
-                put_diff_pixels(y, &mut img, after_w as u32, &a.data, GREEN, RATE)?
+            DiffResult::Added(ref a) => {
+                put_diff_pixels(y, &mut img, after_w as u32, a.data, GREEN, RATE)?
             }
-            &DiffResult::Removed(ref r) => {
-                put_diff_pixels(y, &mut img, before_w as u32, &r.data, RED, RATE)?
+            DiffResult::Removed(ref r) => {
+                put_diff_pixels(y, &mut img, before_w as u32, r.data, RED, RATE)?
             }
-            &DiffResult::Common(ref c) => put_diff_pixels(y, &mut img, width, &c.data, BLACK, 0.0)?,
+            DiffResult::Common(ref c) => put_diff_pixels(y, &mut img, width, c.data, BLACK, 0.0)?,
         }
     }
     Ok(ImageRgba8(img))

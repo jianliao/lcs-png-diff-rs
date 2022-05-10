@@ -45,18 +45,17 @@ fn main() -> Result<(), Box<dyn Error>> {
     let diff_png = args.diff_png;
     let batch_json = args.batch_json;
 
-    let pairs: Vec<DiffPair>;
-    if let Some(batch) = batch_json.as_deref() {
+    let pairs: Vec<DiffPair> = if let Some(batch) = batch_json.as_deref() {
         let file = File::open(batch)?;
         let reader = BufReader::new(file);
-        pairs = serde_json::from_reader(reader).unwrap();
+        serde_json::from_reader(reader).unwrap()
     } else {
-        pairs = vec![DiffPair {
+        vec![DiffPair {
             before: before_png.unwrap(),
             after: after_png.unwrap(),
             result: Some(diff_png.unwrap()),
         }]
-    }
+    };
     let pool = ThreadPool::default();
     for pair in pairs.into_iter() {
         pool.execute(move || generate_diff(pair));
@@ -69,7 +68,7 @@ fn generate_diff(pair: DiffPair) {
     let timer = Instant::now();
     let result_filename = match pair.result {
         Some(p) => p,
-        None => add_suffix_to_file_name(&pair.before, &"_result"),
+        None => add_suffix_to_file_name(&pair.before, "_result"),
     };
     let before: DynamicImage = image::open(&pair.before).unwrap();
     let after: DynamicImage = image::open(&pair.after).unwrap();
