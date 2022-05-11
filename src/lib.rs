@@ -21,11 +21,14 @@ enum DiffResult<'a, T: PartialEq> {
 
 #[derive(Debug, PartialEq)]
 struct DiffElement<'a, T: PartialEq> {
-    pub old_index: Option<usize>,
-    pub new_index: Option<usize>,
     pub data: &'a T,
 }
 
+// Table is like:
+// \ o l d
+// n
+// e
+// w
 fn create_table<T: PartialEq>(old: &[T], new: &[T]) -> Vec<Vec<u32>> {
     let new_len = new.len();
     let old_len = old.len();
@@ -54,22 +57,14 @@ fn lcs_diff<'a, T: PartialEq>(old: &'a [T], new: &'a [T]) -> Vec<DiffResult<'a, 
     if new_len == 0 {
         let mut o = 0;
         while o < old_len {
-            result.push(DiffResult::Removed(DiffElement {
-                old_index: Some(o),
-                new_index: None,
-                data: &old[o],
-            }));
+            result.push(DiffResult::Removed(DiffElement { data: &old[o] }));
             o += 1;
         }
         return result;
     } else if old_len == 0 {
         let mut n = 0;
         while n < new_len {
-            result.push(DiffResult::Added(DiffElement {
-                old_index: None,
-                new_index: Some(n),
-                data: &new[n],
-            }));
+            result.push(DiffResult::Added(DiffElement { data: &new[n] }));
             n += 1;
         }
         return result;
@@ -96,8 +91,6 @@ fn lcs_diff<'a, T: PartialEq>(old: &'a [T], new: &'a [T]) -> Vec<DiffResult<'a, 
         let mut prefix_index = 0;
         while prefix_index < prefix_size {
             result.push(DiffResult::Common(DiffElement {
-                old_index: Some(prefix_index),
-                new_index: Some(prefix_index),
                 data: &old[prefix_index],
             }));
             prefix_index += 1;
@@ -111,23 +104,17 @@ fn lcs_diff<'a, T: PartialEq>(old: &'a [T], new: &'a [T]) -> Vec<DiffResult<'a, 
             let old_index = o + prefix_size;
             if new[new_index] == old[old_index] {
                 result.push(DiffResult::Common(DiffElement {
-                    old_index: Some(old_index),
-                    new_index: Some(new_index),
                     data: &new[new_index],
                 }));
                 n += 1;
                 o += 1;
             } else if table[n + 1][o] >= table[n][o + 1] {
                 result.push(DiffResult::Added(DiffElement {
-                    old_index: None,
-                    new_index: Some(new_index),
                     data: &new[new_index],
                 }));
                 n += 1;
             } else {
                 result.push(DiffResult::Removed(DiffElement {
-                    old_index: Some(old_index),
-                    new_index: None,
                     data: &old[old_index],
                 }));
                 o += 1;
@@ -136,8 +123,6 @@ fn lcs_diff<'a, T: PartialEq>(old: &'a [T], new: &'a [T]) -> Vec<DiffResult<'a, 
         while n < new_len {
             let new_index = n + prefix_size;
             result.push(DiffResult::Added(DiffElement {
-                old_index: None,
-                new_index: Some(new_index),
                 data: &new[new_index],
             }));
             n += 1;
@@ -145,8 +130,6 @@ fn lcs_diff<'a, T: PartialEq>(old: &'a [T], new: &'a [T]) -> Vec<DiffResult<'a, 
         while o < old_len {
             let old_index = o + prefix_size;
             result.push(DiffResult::Removed(DiffElement {
-                old_index: Some(old_index),
-                new_index: None,
                 data: &old[old_index],
             }));
             o += 1;
@@ -156,10 +139,7 @@ fn lcs_diff<'a, T: PartialEq>(old: &'a [T], new: &'a [T]) -> Vec<DiffResult<'a, 
         let mut suffix_index = 0;
         while suffix_index < suffix_size {
             let old_index = suffix_index + old_len + prefix_size;
-            let new_index = suffix_index + new_len + prefix_size;
             result.push(DiffResult::Common(DiffElement {
-                old_index: Some(old_index),
-                new_index: Some(new_index),
                 data: &old[old_index],
             }));
             suffix_index += 1;
@@ -181,7 +161,7 @@ fn put_diff_pixels(
     y: usize,
     img: &mut ImageBuffer<Rgba<u8>, Vec<u8>>,
     row_width: u32,
-    data: &String,
+    data: &str,
     rgb: (u8, u8, u8),
     rate: f32,
 ) -> Result<(), base64::DecodeError> {
