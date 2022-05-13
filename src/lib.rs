@@ -1,11 +1,10 @@
-use base64::DecodeError;
-use base64::{decode, encode};
+use base64::{decode, encode, DecodeError};
 use image::DynamicImage;
 use image::DynamicImage::ImageRgba8;
 use image::GenericImageView;
 use image::ImageBuffer;
 use image::Rgba;
-use std::cmp;
+use std::{cmp, vec};
 
 pub static BLACK: (u8, u8, u8) = (0, 0, 0);
 pub static RED: (u8, u8, u8) = (255, 119, 119);
@@ -214,4 +213,137 @@ pub fn diff(
         }
     }
     Ok(ImageRgba8(img))
+}
+
+#[allow(dead_code)]
+fn gen_lcs<T: PartialEq + Clone>(table: &Vec<Vec<u32>>, old: &[T], new: &[T]) -> Vec<T> {
+    let o_len = old.len();
+    let n_len = new.len();
+    let mut o = 0;
+    let mut n = 0;
+    let mut res = vec![];
+    while o < o_len && n < n_len {
+        if old[o] == new[n] {
+            res.push(new[n].clone());
+            o = o + 1;
+            n = n + 1; // Common
+        } else if table[n + 1][o] >= table[n][o + 1] {
+            n += 1; // Add from new
+        } else {
+            o += 1; // Remove from old
+        }
+    }
+    res
+}
+
+#[test]
+fn should_create_table_with_encode_pixel_array() {
+    let old = [
+        255, 255, 255, 5, 167, 167, 133, 7, 133, 71, 132, 4, 255, 255, 255, 10,
+    ];
+    let old_chunks: Vec<String> = old.to_vec().chunks(4).map(encode).collect();
+    let new = [
+        255, 255, 255, 5, 133, 71, 132, 4, 167, 167, 133, 7, 255, 255, 255, 10,
+    ];
+    let new_chunks: Vec<String> = new.to_vec().chunks(4).map(encode).collect();
+    let lcs_table = create_table(&old_chunks, &new_chunks);
+    assert_eq!(
+        vec!["////BQ==", "p6eFBw==", "////Cg=="],
+        gen_lcs(&lcs_table, &old_chunks, &new_chunks)
+    );
+    assert_eq!(vec![255, 255, 255, 5], decode("////BQ==").unwrap());
+    assert_eq!(vec![167, 167, 133, 7], decode("p6eFBw==").unwrap());
+    assert_eq!(vec![255, 255, 255, 10], decode("////Cg==").unwrap());
+    assert_eq!(3, lcs_table[0][0]);
+}
+
+#[test]
+fn should_create_table_with_strings2() {
+    let old = [
+        "HH", "ee", "ll", "ll", "oo", "  ", "ww", "oo", "rr", "ll", "dd",
+    ];
+    let new = [
+        "HH", "aa", "cc", "kk", "yy", "ii", "nn", "  ", "oo", "oo", "zz",
+    ];
+    let lcs_table = create_table(&old, &new);
+    let expected = vec![
+        /* * * * * H  e  l  l  o  _  w  o  r  l  d  */
+        /*H*/ vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*a*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*c*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*k*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*y*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*i*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*n*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*_*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*o*/ vec![2, 2, 2, 2, 2, 1, 1, 1, 0, 0, 0, 0],
+        /*o*/ vec![1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0],
+        /*z*/ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        /* */ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ];
+    assert_eq!(vec!["HH", "oo", "oo"], gen_lcs(&lcs_table, &old, &new));
+    assert_eq!(expected, lcs_table);
+}
+
+#[test]
+fn should_create_table_with_strings() {
+    let old = ["H", "e", "l", "l", "o", " ", "w", "o", "r", "l", "d"];
+    let new = ["H", "a", "c", "k", "y", "i", "n", " ", "o", "o", "z"];
+    let lcs_table = create_table(&old, &new);
+    let expected = vec![
+        /* * * * * H  e  l  l  o  _  w  o  r  l  d  */
+        /*H*/ vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*a*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*c*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*k*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*y*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*i*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*n*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*_*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*o*/ vec![2, 2, 2, 2, 2, 1, 1, 1, 0, 0, 0, 0],
+        /*o*/ vec![1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0],
+        /*z*/ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        /* */ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ];
+    assert_eq!(vec!["H", "o", "o"], gen_lcs(&lcs_table, &old, &new));
+    assert_eq!(expected, lcs_table);
+}
+
+#[test]
+fn should_create_table_with_chars() {
+    let old = ['H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd'];
+    let new = ['H', 'a', 'c', 'k', 'y', 'i', 'n', ' ', 'o', 'o', 'z'];
+    let lcs_table = create_table(&old, &new);
+    let expected = vec![
+        /* * * * * H  e  l  l  o  _  w  o  r  l  d  */
+        /*H*/ vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*a*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*c*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*k*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*y*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*i*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*n*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*_*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*o*/ vec![2, 2, 2, 2, 2, 1, 1, 1, 0, 0, 0, 0],
+        /*o*/ vec![1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0],
+        /*z*/ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        /* */ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ];
+    assert_eq!(vec!['H', 'o', 'o'], gen_lcs(&lcs_table, &old, &new));
+    assert_eq!(expected, lcs_table);
+}
+
+#[test]
+fn should_create_table_with_numbers() {
+    let old = [1, 2, 3, 4];
+    let new = [2, 4];
+    let lcs_table = create_table(&old, &new);
+    let expected = vec![
+        vec![2, 2, 1, 1, 0],
+        vec![1, 1, 1, 1, 0],
+        vec![0, 0, 0, 0, 0],
+    ];
+    let res = gen_lcs(&lcs_table, &old, &new);
+    assert_eq!(vec![2, 4], res);
+    assert_eq!(expected, lcs_table);
 }
