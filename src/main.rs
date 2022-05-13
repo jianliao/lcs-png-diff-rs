@@ -64,6 +64,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+/// Generate the png diff image from the input pair
 fn generate_diff(pair: DiffPair) {
     let timer = Instant::now();
     let result_filename = match pair.result {
@@ -77,12 +78,14 @@ fn generate_diff(pair: DiffPair) {
     println!("{}: {:?}", result_filename, timer.elapsed());
 }
 
+/// Save the png to a file
 fn save_png(image: &DynamicImage, filename: &str) {
     let path = Path::new(filename).parent().unwrap();
     let _result = mkdirp(path);
     image.save(filename).unwrap();
 }
 
+/// Create the whole path if it doesn't exist
 fn mkdirp<P: AsRef<Path>>(p: P) -> io::Result<()> {
     if let Err(e) = create_dir_all(p) {
         if e.kind() != io::ErrorKind::AlreadyExists {
@@ -93,6 +96,7 @@ fn mkdirp<P: AsRef<Path>>(p: P) -> io::Result<()> {
     Ok(())
 }
 
+/// Add a suffix to the path
 pub fn add_suffix_to_file_name(file_name: &str, suffix: &str) -> String {
     let path = Path::new(file_name);
     let file_basename = path.file_stem().unwrap();
