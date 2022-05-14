@@ -19,7 +19,7 @@ struct DiffPair {
 }
 
 #[derive(Parser, Debug)]
-#[clap(about, author, long_about = None, version)]
+#[clap(about, author, long_about = None, version, arg_required_else_help=true)]
 struct Args {
     /// Path to the before png
     #[clap(short, long)]
@@ -97,7 +97,7 @@ fn mkdirp<P: AsRef<Path>>(p: P) -> io::Result<()> {
 }
 
 /// Add a suffix to the path
-pub fn add_suffix_to_file_name(file_name: &str, suffix: &str) -> String {
+fn add_suffix_to_file_name(file_name: &str, suffix: &str) -> String {
     let path = Path::new(file_name);
     let file_basename = path.file_stem().unwrap();
     let dir = path.parent().unwrap();
@@ -116,13 +116,13 @@ pub fn add_suffix_to_file_name(file_name: &str, suffix: &str) -> String {
 #[test]
 fn happy_path() {
     let pair = DiffPair {
-        before: "tests/fixtures/backstopjs_pricing_before.png".to_owned(),
+        before: "tests/fixtures/backstopjs_pricing.png".to_owned(),
         after: "tests/fixtures/backstopjs_pricing_after.png".to_owned(),
-        result: None
+        result: None,
     };
 
     generate_diff(pair);
 
-    let result = image::open("tests/fixtures/backstopjs_pricing_before_result.png");
+    let result = image::open("tests/fixtures/backstopjs_pricing_result.png");
     println!("{:?}", result);
 }

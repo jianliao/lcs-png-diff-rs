@@ -30,7 +30,7 @@ fn create_lcs_table(c: &mut Criterion) {
 
 fn long_string_lcs_table(c: &mut Criterion) {
     let before_png_1100k: DynamicImage =
-        image::open("tests/fixtures/backstopjs_pricing_before.png").unwrap();
+        image::open("tests/fixtures/backstopjs_pricing.png").unwrap();
     let after_png_1100k: DynamicImage =
         image::open("tests/fixtures/backstopjs_pricing_after.png").unwrap();
     let after_w = after_png_1100k.dimensions().0;
@@ -64,7 +64,7 @@ fn long_string_lcs_table(c: &mut Criterion) {
 
 fn small_png_diff(c: &mut Criterion) {
     let before_png_118k: DynamicImage =
-        image::open("tests/fixtures/backstopjs_pricing_before.png").unwrap();
+        image::open("tests/fixtures/backstopjs_pricing.png").unwrap();
     let after_png_118k: DynamicImage =
         image::open("tests/fixtures/backstopjs_pricing_after.png").unwrap();
     c.bench_function("png diff 118k", |b| {
@@ -73,7 +73,7 @@ fn small_png_diff(c: &mut Criterion) {
 }
 
 fn large_png_diff(c: &mut Criterion) {
-    let before_png_1100k: DynamicImage = image::open("tests/fixtures/slider_before.png").unwrap();
+    let before_png_1100k: DynamicImage = image::open("tests/fixtures/slider.png").unwrap();
     let after_png_1100k: DynamicImage = image::open("tests/fixtures/slider_after.png").unwrap();
     let mut group = c.benchmark_group("large_png_diff");
     group
