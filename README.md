@@ -1,5 +1,5 @@
 # lcs-png-diff-rs
-Generate diff bitmap(PNG) by the Longest Common Subsequence algorithm. This project is inspired by [![LCS-IMAGE-DIFF](https://crates.io/crates/lcs-image-diff)]. But it combined [![LCS-IMAGE-DIFF](https://crates.io/crates/lcs-image-diff)] and its dependency algorithm crate [![LCS-DIFF](https://crates.io/crates/lcs-diff)] into one.
+Generate diff bitmap(PNG) by the Longest Common Subsequence algorithm. This project is inspired by [LCS-IMAGE-DIFF](https://crates.io/crates/lcs-image-diff). But it combined [LCS-IMAGE-DIFF](https://crates.io/crates/lcs-image-diff) and its dependency algorithm crate [LCS-DIFF](https://crates.io/crates/lcs-diff) into one.
 
 ## Features
 
