@@ -116,13 +116,13 @@ pub fn add_suffix_to_file_name(file_name: &str, suffix: &str) -> String {
 #[test]
 fn happy_path() {
     let pair = DiffPair {
-        before: "/Users/jianliao/Work/scm/github/lcs-png-diff-rs/tests/fixtures/backstopjs_pricing_before.png".to_owned(),
-        after: "/Users/jianliao/Work/scm/github/lcs-png-diff-rs/tests/fixtures/backstopjs_pricing_after.png".to_owned(),
+        before: "tests/fixtures/backstopjs_pricing_before.png".to_owned(),
+        after: "tests/fixtures/backstopjs_pricing_after.png".to_owned(),
         result: None
     };
 
     generate_diff(pair);
 
-    let result = image::open("/Users/jianliao/Work/scm/github/lcs-png-diff-rs/tests/fixtures/backstopjs_pricing_before_result.png");
+    let result = image::open("tests/fixtures/backstopjs_pricing_before_result.png");
     println!("{:?}", result);
 }

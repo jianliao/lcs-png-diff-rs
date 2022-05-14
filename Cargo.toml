@@ -19,6 +19,13 @@ default = ["binary"]
 binary = ["all_image_formats"]
 all_image_formats = ["image/png"]
 
+[dev-dependencies]
+criterion = "0.3"
+
+[[bench]]
+name = "benchmark"
+harness = false
+
 [dependencies]
 base64 = "0.13.0"
 clap = { version = "3.1.12", features = ["derive"] }

@@ -28,7 +28,7 @@ struct DiffElement<'a, T: PartialEq> {
 // n
 // e
 // w
-fn create_table<T: PartialEq>(old: &[T], new: &[T]) -> Vec<Vec<u32>> {
+pub fn create_table<T: PartialEq>(old: &[T], new: &[T]) -> Vec<Vec<u32>> {
     let new_len = new.len();
     let old_len = old.len();
     let mut table = vec![vec![0; old_len + 1]; new_len + 1];
