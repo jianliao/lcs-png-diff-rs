@@ -29,8 +29,10 @@ fn create_lcs_table(c: &mut Criterion) {
 }
 
 fn long_string_lcs_table(c: &mut Criterion) {
-    let before_png_1100k: DynamicImage = image::open("tests/fixtures/slider_before.png").unwrap();
-    let after_png_1100k: DynamicImage = image::open("tests/fixtures/slider_after.png").unwrap();
+    let before_png_1100k: DynamicImage =
+        image::open("tests/fixtures/backstopjs_pricing_before.png").unwrap();
+    let after_png_1100k: DynamicImage =
+        image::open("tests/fixtures/backstopjs_pricing_after.png").unwrap();
     let after_w = after_png_1100k.dimensions().0;
     let before_w = before_png_1100k.dimensions().0;
     let before_encoded_png: Vec<String> = before_png_1100k
@@ -48,9 +50,7 @@ fn long_string_lcs_table(c: &mut Criterion) {
 
     let mut group = c.benchmark_group("long_string_lcs_table");
 
-    group
-        .measurement_time(Duration::new(500, 0))
-        .sample_size(10);
+    group.sample_size(10);
     group.bench_function("create_cls_table", |b| {
         b.iter(|| {
             create_table(
@@ -88,7 +88,7 @@ fn large_png_diff(c: &mut Criterion) {
 criterion_group!(
     benches,
     create_lcs_table,
-    // long_string_lcs_table,
+    long_string_lcs_table,
     small_png_diff,
     large_png_diff
 );
