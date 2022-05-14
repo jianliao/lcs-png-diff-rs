@@ -2,8 +2,22 @@
 name = "lcs-png-diff-rs"
 version = "0.1.0"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+documentation = "https://github.com/jianliao/lcs-png-diff-rs"
+homepage = "https://github.com/jianliao/lcs-png-diff-rs"
+repository = "https://github.com/jianliao/lcs-png-diff-rs"
+license = "MIT"
+readme ="README.md"
+authors = ["Jian Liao <jian.liao@gmail.com>"]
+description = "PNG diff tool with LCS algorithm"
+keywords = [
+  "PNG",
+  "Bitmap",
+  "lcs"
+]
+exclude = [
+  "tests/**/*",
+  ".gitignore"
+]
 
 [lib]
 name = "lcs_png_diff"
