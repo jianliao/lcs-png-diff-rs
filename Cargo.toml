@@ -1,5 +1,5 @@
 [package]
-name = "lcs-png-diff-rs"
+name = "lcs-png-diff"
 version = "0.1.0"
 edition = "2021"
 documentation = "https://github.com/jianliao/lcs-png-diff-rs"
