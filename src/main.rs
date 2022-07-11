@@ -73,7 +73,8 @@ fn generate_diff(pair: DiffPair) {
     };
     let before = image::open(&pair.before).expect("Unable to parse before png bitmap");
     let after = image::open(&pair.after).expect("Unable to parse after png bitmap");
-    let result_png = diff(&before, &after).expect("Error occurred while processing the diff result");
+    let result_png =
+        diff(&before, &after).expect("Error occurred while processing the diff result");
     save_png(&result_png, &result_filename);
     println!("{}: {:?}", result_filename, timer.elapsed());
 }
@@ -82,7 +83,9 @@ fn generate_diff(pair: DiffPair) {
 fn save_png(image: &DynamicImage, filename: &str) {
     let path = Path::new(filename).parent().unwrap();
     let _ = mkdirp(path);
-    image.save(filename).expect("Unable to save the diff result bitmap as a png file");
+    image
+        .save(filename)
+        .expect("Unable to save the diff result bitmap as a png file");
 }
 
 /// Create the whole path if it doesn't exist

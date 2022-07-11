@@ -34,7 +34,6 @@ pub fn create_table<T: PartialEq>(old: &[T], new: &[T]) -> Vec<Vec<u32>> {
     let mut table = vec![vec![0; old_len + 1]; new_len + 1];
     for i in 0..new_len {
         let i = new_len - i - 1;
-        //table[i][old_len] = 0;
         for j in 0..old_len {
             let j = old_len - j - 1;
             // Performance bottle neck - long string comparison
@@ -198,11 +197,11 @@ pub fn diff(
         .map(encode)
         .collect();
 
-    let diff_result: Vec<DiffResult<String>> = lcs_diff(&before_encoded_png, &after_encoded_png);
+    let diff_result = lcs_diff(&before_encoded_png, &after_encoded_png);
 
     let height = diff_result.len() as u32;
     let width = cmp::max(before_w, after_w) as u32;
-    let mut img: ImageBuffer<Rgba<u8>, Vec<u8>> = ImageBuffer::new(width, height);
+    let mut img = ImageBuffer::new(width, height);
     for (y, d) in diff_result.iter().enumerate() {
         match d {
             DiffResult::Added(ref a) => {
@@ -270,8 +269,7 @@ fn should_create_table_with_strings2() {
     let lcs_table = create_table(&old, &new);
     let expected = vec![
         /* * * * * H  e  l  l  o  _  w  o  r  l  d  */
-        /*H*/
-        vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*H*/ vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*a*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*c*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*k*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
@@ -295,8 +293,7 @@ fn should_create_table_with_strings() {
     let lcs_table = create_table(&old, &new);
     let expected = vec![
         /* * * * * H  e  l  l  o  _  w  o  r  l  d  */
-        /*H*/
-        vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*H*/ vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*a*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*c*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*k*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
@@ -320,8 +317,7 @@ fn should_create_table_with_chars() {
     let lcs_table = create_table(&old, &new);
     let expected = vec![
         /* * * * * H  e  l  l  o  _  w  o  r  l  d  */
-        /*H*/
-        vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*H*/ vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*a*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*c*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*k*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],

@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use base64::encode;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use image::{DynamicImage, GenericImageView};
+use image::GenericImageView;
 use lcs_png_diff::{create_table, diff};
 
 fn create_lcs_table(c: &mut Criterion) {
@@ -29,10 +29,8 @@ fn create_lcs_table(c: &mut Criterion) {
 }
 
 fn long_string_lcs_table(c: &mut Criterion) {
-    let before_png_1100k: DynamicImage =
-        image::open("tests/fixtures/backstopjs_pricing.png").unwrap();
-    let after_png_1100k: DynamicImage =
-        image::open("tests/fixtures/backstopjs_pricing_after.png").unwrap();
+    let before_png_1100k = image::open("tests/fixtures/backstopjs_pricing.png").unwrap();
+    let after_png_1100k = image::open("tests/fixtures/backstopjs_pricing_after.png").unwrap();
     let after_w = after_png_1100k.dimensions().0;
     let before_w = before_png_1100k.dimensions().0;
     let before_encoded_png: Vec<String> = before_png_1100k
@@ -63,18 +61,16 @@ fn long_string_lcs_table(c: &mut Criterion) {
 }
 
 fn small_png_diff(c: &mut Criterion) {
-    let before_png_118k: DynamicImage =
-        image::open("tests/fixtures/backstopjs_pricing.png").unwrap();
-    let after_png_118k: DynamicImage =
-        image::open("tests/fixtures/backstopjs_pricing_after.png").unwrap();
+    let before_png_118k = image::open("tests/fixtures/backstopjs_pricing.png").unwrap();
+    let after_png_118k = image::open("tests/fixtures/backstopjs_pricing_after.png").unwrap();
     c.bench_function("png diff 118k", |b| {
         b.iter(|| diff(black_box(&before_png_118k), black_box(&after_png_118k)))
     });
 }
 
 fn large_png_diff(c: &mut Criterion) {
-    let before_png_1100k: DynamicImage = image::open("tests/fixtures/slider.png").unwrap();
-    let after_png_1100k: DynamicImage = image::open("tests/fixtures/slider_after.png").unwrap();
+    let before_png_1100k = image::open("tests/fixtures/slider.png").unwrap();
+    let after_png_1100k = image::open("tests/fixtures/slider_after.png").unwrap();
     let mut group = c.benchmark_group("large_png_diff");
     group
         .measurement_time(Duration::new(180, 0))
