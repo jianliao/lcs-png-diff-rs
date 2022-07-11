@@ -21,13 +21,13 @@ struct DiffPair {
 #[derive(Parser, Debug)]
 #[clap(about, author, long_about = None, version, arg_required_else_help=true)]
 struct Args {
-    /// Path to the before png
-    #[clap(short, long)]
-    before_png: Option<String>,
-
     /// Path to the after png
     #[clap(short, long)]
     after_png: Option<String>,
+
+    /// Path to the before png
+    #[clap(short, long)]
+    before_png: Option<String>,
 
     /// Path to the diff result png
     #[clap(short, long)]
@@ -45,19 +45,19 @@ fn main() -> Result<(), Box<dyn Error>> {
     let diff_png = args.diff_png;
     let batch_json = args.batch_json;
 
-    let pairs: Vec<DiffPair> = if let Some(batch) = batch_json.as_deref() {
+    let pairs = if let Some(batch) = batch_json {
         let file = File::open(batch)?;
         let reader = BufReader::new(file);
-        serde_json::from_reader(reader).unwrap()
+        serde_json::from_reader(reader)?
     } else {
         vec![DiffPair {
-            before: before_png.unwrap(),
             after: after_png.unwrap(),
-            result: Some(diff_png.unwrap()),
+            before: before_png.unwrap(),
+            result: diff_png,
         }]
     };
     let pool = ThreadPool::default();
-    for pair in pairs.into_iter() {
+    for pair in pairs {
         pool.execute(move || generate_diff(pair));
     }
     pool.shutdown_join();
@@ -71,9 +71,9 @@ fn generate_diff(pair: DiffPair) {
         Some(p) => p,
         None => add_suffix_to_file_name(&pair.before, "_result"),
     };
-    let before: DynamicImage = image::open(&pair.before).unwrap();
-    let after: DynamicImage = image::open(&pair.after).unwrap();
-    let result_png: DynamicImage = diff(&before, &after).unwrap();
+    let before = image::open(&pair.before).expect("Unable to parse before png bitmap");
+    let after = image::open(&pair.after).expect("Unable to parse after png bitmap");
+    let result_png = diff(&before, &after).expect("Error occurred while processing the diff result");
     save_png(&result_png, &result_filename);
     println!("{}: {:?}", result_filename, timer.elapsed());
 }
@@ -81,8 +81,8 @@ fn generate_diff(pair: DiffPair) {
 /// Save the png to a file
 fn save_png(image: &DynamicImage, filename: &str) {
     let path = Path::new(filename).parent().unwrap();
-    let _result = mkdirp(path);
-    image.save(filename).unwrap();
+    let _ = mkdirp(path);
+    image.save(filename).expect("Unable to save the diff result bitmap as a png file");
 }
 
 /// Create the whole path if it doesn't exist

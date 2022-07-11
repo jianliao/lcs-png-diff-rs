@@ -167,7 +167,7 @@ fn put_diff_pixels(
     let row = decode(data)?;
     for x in 0..img.dimensions().0 {
         let index = x as usize * 4;
-        let pixel: Rgba<u8> = if row_width > x {
+        let pixel = if row_width > x {
             Rgba([row[index], row[index + 1], row[index + 2], row[index + 3]])
         } else {
             Rgba([0, 0, 0, 0])
@@ -216,7 +216,7 @@ pub fn diff(
 }
 
 #[allow(dead_code)]
-fn gen_lcs<T: PartialEq + Clone>(table: &Vec<Vec<u32>>, old: &[T], new: &[T]) -> Vec<T> {
+fn gen_lcs<'a, T: PartialEq>(table: &Vec<Vec<u32>>, old: &[T], new: &'a [T]) -> Vec<&'a T> {
     let o_len = old.len();
     let n_len = new.len();
     let mut o = 0;
@@ -224,7 +224,7 @@ fn gen_lcs<T: PartialEq + Clone>(table: &Vec<Vec<u32>>, old: &[T], new: &[T]) ->
     let mut res = vec![];
     while o < o_len && n < n_len {
         if old[o] == new[n] {
-            res.push(new[n].clone());
+            res.push(&new[n]);
             o = o + 1;
             n = n + 1; // Common
         } else if table[n + 1][o] >= table[n][o + 1] {
@@ -281,7 +281,7 @@ fn should_create_table_with_strings2() {
         /*z*/ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         /* */ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
-    assert_eq!(vec!["HH", "oo", "oo"], gen_lcs(&lcs_table, &old, &new));
+    assert_eq!(vec![&"HH", &"oo", &"oo"], gen_lcs(&lcs_table, &old, &new));
     assert_eq!(expected, lcs_table);
 }
 
@@ -305,7 +305,7 @@ fn should_create_table_with_strings() {
         /*z*/ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         /* */ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
-    assert_eq!(vec!["H", "o", "o"], gen_lcs(&lcs_table, &old, &new));
+    assert_eq!(vec![&"H", &"o", &"o"], gen_lcs(&lcs_table, &old, &new));
     assert_eq!(expected, lcs_table);
 }
 
@@ -329,7 +329,7 @@ fn should_create_table_with_chars() {
         /*z*/ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         /* */ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
-    assert_eq!(vec!['H', 'o', 'o'], gen_lcs(&lcs_table, &old, &new));
+    assert_eq!(vec![&'H', &'o', &'o'], gen_lcs(&lcs_table, &old, &new));
     assert_eq!(expected, lcs_table);
 }
 
@@ -344,6 +344,6 @@ fn should_create_table_with_numbers() {
         vec![0, 0, 0, 0, 0],
     ];
     let res = gen_lcs(&lcs_table, &old, &new);
-    assert_eq!(vec![2, 4], res);
+    assert_eq!(vec![&2, &4], res);
     assert_eq!(expected, lcs_table);
 }
