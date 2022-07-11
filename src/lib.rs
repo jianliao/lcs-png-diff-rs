@@ -49,11 +49,11 @@ pub fn create_table<T: PartialEq>(old: &[T], new: &[T]) -> Vec<Vec<u32>> {
 }
 
 fn lcs_diff<'a, T: PartialEq>(old: &'a [T], new: &'a [T]) -> Vec<DiffResult<'a, T>> {
-    let mut result: Vec<DiffResult<T>> = Vec::new();
     let new_len = new.len();
     let old_len = old.len();
 
     if new_len == 0 {
+        let mut result = Vec::with_capacity(old_len);
         let mut o = 0;
         while o < old_len {
             result.push(DiffResult::Removed(DiffElement { data: &old[o] }));
@@ -61,6 +61,7 @@ fn lcs_diff<'a, T: PartialEq>(old: &'a [T], new: &'a [T]) -> Vec<DiffResult<'a, 
         }
         return result;
     } else if old_len == 0 {
+        let mut result = Vec::with_capacity(new_len);
         let mut n = 0;
         while n < new_len {
             result.push(DiffResult::Added(DiffElement { data: &new[n] }));
@@ -85,6 +86,7 @@ fn lcs_diff<'a, T: PartialEq>(old: &'a [T], new: &'a [T]) -> Vec<DiffResult<'a, 
         );
         let new_len = new_len - prefix_size - suffix_size;
         let old_len = old_len - prefix_size - suffix_size;
+        let mut result = Vec::with_capacity(prefix_size + cmp::max(old_len, new_len) + suffix_size);
 
         // Restore common prefix
         let mut prefix_index = 0;
@@ -143,8 +145,8 @@ fn lcs_diff<'a, T: PartialEq>(old: &'a [T], new: &'a [T]) -> Vec<DiffResult<'a, 
             }));
             suffix_index += 1;
         }
+        result
     }
-    result
 }
 
 fn blend(base: Rgba<u8>, rgb: (u8, u8, u8), rate: f32) -> Rgba<u8> {
@@ -268,7 +270,8 @@ fn should_create_table_with_strings2() {
     let lcs_table = create_table(&old, &new);
     let expected = vec![
         /* * * * * H  e  l  l  o  _  w  o  r  l  d  */
-        /*H*/ vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*H*/
+        vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*a*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*c*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*k*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
@@ -292,7 +295,8 @@ fn should_create_table_with_strings() {
     let lcs_table = create_table(&old, &new);
     let expected = vec![
         /* * * * * H  e  l  l  o  _  w  o  r  l  d  */
-        /*H*/ vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*H*/
+        vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*a*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*c*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*k*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
@@ -316,7 +320,8 @@ fn should_create_table_with_chars() {
     let lcs_table = create_table(&old, &new);
     let expected = vec![
         /* * * * * H  e  l  l  o  _  w  o  r  l  d  */
-        /*H*/ vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*H*/
+        vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*a*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*c*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*k*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
