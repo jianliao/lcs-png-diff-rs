@@ -282,7 +282,7 @@ fn should_create_table_with_strings2() {
         /*z*/ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         /* */ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
-    assert_eq!(vec![&"HH", &"oo", &"oo"], gen_lcs(&lcs_table, &old, &new));
+    assert_eq!(["HH", "oo", "oo"].iter().collect::<Vec<_>>(), gen_lcs(&lcs_table, &old, &new));
     assert_eq!(expected, lcs_table);
 }
 
@@ -306,7 +306,7 @@ fn should_create_table_with_strings() {
         /*z*/ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         /* */ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
-    assert_eq!(vec![&"H", &"o", &"o"], gen_lcs(&lcs_table, &old, &new));
+    assert_eq!(["H", "o", "o"].iter().collect::<Vec<_>>(), gen_lcs(&lcs_table, &old, &new));
     assert_eq!(expected, lcs_table);
 }
 
@@ -330,7 +330,7 @@ fn should_create_table_with_chars() {
         /*z*/ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         /* */ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
-    assert_eq!(vec![&'H', &'o', &'o'], gen_lcs(&lcs_table, &old, &new));
+    assert_eq!(['H', 'o', 'o'].iter().collect::<Vec<_>>(), gen_lcs(&lcs_table, &old, &new));
     assert_eq!(expected, lcs_table);
 }
 
@@ -345,6 +345,6 @@ fn should_create_table_with_numbers() {
         vec![0, 0, 0, 0, 0],
     ];
     let res = gen_lcs(&lcs_table, &old, &new);
-    assert_eq!(vec![&2, &4], res);
+    assert_eq!([2, 4].iter().collect::<Vec<_>>(), res);
     assert_eq!(expected, lcs_table);
 }
