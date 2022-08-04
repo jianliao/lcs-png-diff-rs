@@ -1,9 +1,11 @@
 use base64::{decode, encode, DecodeError};
+use image::io::Reader;
 use image::DynamicImage;
 use image::DynamicImage::ImageRgba8;
 use image::GenericImageView;
 use image::ImageBuffer;
 use image::Rgba;
+use std::io::Cursor;
 use std::{cmp, vec};
 
 pub static BLACK: (u8, u8, u8) = (0, 0, 0);
@@ -216,6 +218,20 @@ pub fn diff(
     Ok(ImageRgba8(img))
 }
 
+pub fn diff_slice(before_slice: &[u8], after_slice: &[u8]) -> Result<Vec<u8>, DecodeError> {
+    let before_png = Reader::new(Cursor::new(before_slice))
+        .with_guessed_format()
+        .expect("Cursor io never fails")
+        .decode()
+        .expect("Unable to decode before_png");
+    let after_png = Reader::new(Cursor::new(after_slice))
+        .with_guessed_format()
+        .expect("Cursor io never fails")
+        .decode()
+        .expect("Unable to decode after_png");
+    diff(&before_png, &after_png).map(|img| img.as_bytes().to_vec())
+}
+
 #[allow(dead_code)]
 fn gen_lcs<'a, T: PartialEq>(table: &Vec<Vec<u32>>, old: &[T], new: &'a [T]) -> Vec<&'a T> {
     let o_len = old.len();
@@ -282,7 +298,10 @@ fn should_create_table_with_strings2() {
         /*z*/ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         /* */ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
-    assert_eq!(["HH", "oo", "oo"].iter().collect::<Vec<_>>(), gen_lcs(&lcs_table, &old, &new));
+    assert_eq!(
+        ["HH", "oo", "oo"].iter().collect::<Vec<_>>(),
+        gen_lcs(&lcs_table, &old, &new)
+    );
     assert_eq!(expected, lcs_table);
 }
 
@@ -330,7 +349,10 @@ fn should_create_table_with_chars() {
         /*z*/ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         /* */ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
-    assert_eq!(['H', 'o', 'o'].iter().collect::<Vec<_>>(), gen_lcs(&lcs_table, &old, &new));
+    assert_eq!(
+        ['H', 'o', 'o'].iter().collect::<Vec<_>>(),
+        gen_lcs(&lcs_table, &old, &new)
+    );
     assert_eq!(expected, lcs_table);
 }
 
