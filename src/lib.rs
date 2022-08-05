@@ -218,7 +218,10 @@ pub fn diff(
     Ok(ImageRgba8(img))
 }
 
-pub fn diff_slice(before_slice: &[u8], after_slice: &[u8]) -> Result<Vec<u8>, DecodeError> {
+pub fn diff_slice(
+    before_slice: &[u8],
+    after_slice: &[u8],
+) -> Result<(Vec<u8>, u32, u32), DecodeError> {
     let before_png = Reader::new(Cursor::new(before_slice))
         .with_guessed_format()
         .expect("Cursor io never fails")
@@ -229,7 +232,13 @@ pub fn diff_slice(before_slice: &[u8], after_slice: &[u8]) -> Result<Vec<u8>, De
         .expect("Cursor io never fails")
         .decode()
         .expect("Unable to decode after_png");
-    diff(&before_png, &after_png).map(|img| img.as_bytes().to_vec())
+    diff(&before_png, &after_png).map(|img| {
+        (
+            img.as_bytes().to_vec(),
+            img.dimensions().0,
+            img.dimensions().1,
+        )
+    })
 }
 
 #[allow(dead_code)]
@@ -325,7 +334,10 @@ fn should_create_table_with_strings() {
         /*z*/ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         /* */ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
-    assert_eq!(["H", "o", "o"].iter().collect::<Vec<_>>(), gen_lcs(&lcs_table, &old, &new));
+    assert_eq!(
+        ["H", "o", "o"].iter().collect::<Vec<_>>(),
+        gen_lcs(&lcs_table, &old, &new)
+    );
     assert_eq!(expected, lcs_table);
 }
 
