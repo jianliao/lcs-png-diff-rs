@@ -260,126 +260,128 @@ fn gen_lcs<'a, T: PartialEq>(table: &Vec<Vec<u32>>, old: &[T], new: &'a [T]) -> 
     res
 }
 
-#[test]
-fn should_create_table_with_encode_pixel_array() {
-    let old = [
-        255, 255, 255, 5, 167, 167, 133, 7, 133, 71, 132, 4, 255, 255, 255, 10,
-    ];
-    let old_chunks: Vec<String> = old.to_vec().chunks(4).map(encode).collect();
-    let new = [
-        255, 255, 255, 5, 133, 71, 132, 4, 167, 167, 133, 7, 255, 255, 255, 10,
-    ];
-    let new_chunks: Vec<String> = new.to_vec().chunks(4).map(encode).collect();
-    let lcs_table = create_table(&old_chunks, &new_chunks);
-    assert_eq!(
-        vec!["////BQ==", "p6eFBw==", "////Cg=="],
-        gen_lcs(&lcs_table, &old_chunks, &new_chunks)
-    );
-    assert_eq!(vec![255, 255, 255, 5], decode("////BQ==").unwrap());
-    assert_eq!(vec![167, 167, 133, 7], decode("p6eFBw==").unwrap());
-    assert_eq!(vec![255, 255, 255, 10], decode("////Cg==").unwrap());
-    assert_eq!(3, lcs_table[0][0]);
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-#[test]
-fn should_create_table_with_strings2() {
-    let old = [
-        "HH", "ee", "ll", "ll", "oo", "  ", "ww", "oo", "rr", "ll", "dd",
-    ];
-    let new = [
-        "HH", "aa", "cc", "kk", "yy", "ii", "nn", "  ", "oo", "oo", "zz",
-    ];
-    let lcs_table = create_table(&old, &new);
-    let expected = vec![
-        /* * * * * H  e  l  l  o  _  w  o  r  l  d  */
-        /*H*/
-        vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
-        /*a*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
-        /*c*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
-        /*k*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
-        /*y*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
-        /*i*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
-        /*n*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
-        /*_*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
-        /*o*/ vec![2, 2, 2, 2, 2, 1, 1, 1, 0, 0, 0, 0],
-        /*o*/ vec![1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0],
-        /*z*/ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        /* */ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    ];
-    assert_eq!(
-        ["HH", "oo", "oo"].iter().collect::<Vec<_>>(),
-        gen_lcs(&lcs_table, &old, &new)
-    );
-    assert_eq!(expected, lcs_table);
-}
+    #[test]
+    fn should_create_table_with_encode_pixel_array() {
+        let old = [
+            255, 255, 255, 5, 167, 167, 133, 7, 133, 71, 132, 4, 255, 255, 255, 10,
+        ];
+        let old_chunks: Vec<String> = old.to_vec().chunks(4).map(encode).collect();
+        let new = [
+            255, 255, 255, 5, 133, 71, 132, 4, 167, 167, 133, 7, 255, 255, 255, 10,
+        ];
+        let new_chunks: Vec<String> = new.to_vec().chunks(4).map(encode).collect();
+        let lcs_table = create_table(&old_chunks, &new_chunks);
+        assert_eq!(
+            vec!["////BQ==", "p6eFBw==", "////Cg=="],
+            gen_lcs(&lcs_table, &old_chunks, &new_chunks)
+        );
+        assert_eq!(vec![255, 255, 255, 5], decode("////BQ==").unwrap());
+        assert_eq!(vec![167, 167, 133, 7], decode("p6eFBw==").unwrap());
+        assert_eq!(vec![255, 255, 255, 10], decode("////Cg==").unwrap());
+        assert_eq!(3, lcs_table[0][0]);
+    }
 
-#[test]
-fn should_create_table_with_strings() {
-    let old = ["H", "e", "l", "l", "o", " ", "w", "o", "r", "l", "d"];
-    let new = ["H", "a", "c", "k", "y", "i", "n", " ", "o", "o", "z"];
-    let lcs_table = create_table(&old, &new);
-    let expected = vec![
-        /* * * * * H  e  l  l  o  _  w  o  r  l  d  */
-        /*H*/
-        vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
-        /*a*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
-        /*c*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
-        /*k*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
-        /*y*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
-        /*i*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
-        /*n*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
-        /*_*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
-        /*o*/ vec![2, 2, 2, 2, 2, 1, 1, 1, 0, 0, 0, 0],
-        /*o*/ vec![1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0],
-        /*z*/ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        /* */ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    ];
-    assert_eq!(
-        ["H", "o", "o"].iter().collect::<Vec<_>>(),
-        gen_lcs(&lcs_table, &old, &new)
-    );
-    assert_eq!(expected, lcs_table);
-}
+    #[test]
+    fn should_create_table_with_strings2() {
+        let old = [
+            "HH", "ee", "ll", "ll", "oo", "  ", "ww", "oo", "rr", "ll", "dd",
+        ];
+        let new = [
+            "HH", "aa", "cc", "kk", "yy", "ii", "nn", "  ", "oo", "oo", "zz",
+        ];
+        let lcs_table = create_table(&old, &new);
+        let expected = vec![
+            /* * * * * H  e  l  l  o  _  w  o  r  l  d  */
+            /*H*/ vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+            /*a*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+            /*c*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+            /*k*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+            /*y*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+            /*i*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+            /*n*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+            /*_*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+            /*o*/ vec![2, 2, 2, 2, 2, 1, 1, 1, 0, 0, 0, 0],
+            /*o*/ vec![1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0],
+            /*z*/ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            /* */ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ];
+        assert_eq!(
+            ["HH", "oo", "oo"].iter().collect::<Vec<_>>(),
+            gen_lcs(&lcs_table, &old, &new)
+        );
+        assert_eq!(expected, lcs_table);
+    }
 
-#[test]
-fn should_create_table_with_chars() {
-    let old = ['H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd'];
-    let new = ['H', 'a', 'c', 'k', 'y', 'i', 'n', ' ', 'o', 'o', 'z'];
-    let lcs_table = create_table(&old, &new);
-    let expected = vec![
-        /* * * * * H  e  l  l  o  _  w  o  r  l  d  */
-        /*H*/
-        vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
-        /*a*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
-        /*c*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
-        /*k*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
-        /*y*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
-        /*i*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
-        /*n*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
-        /*_*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
-        /*o*/ vec![2, 2, 2, 2, 2, 1, 1, 1, 0, 0, 0, 0],
-        /*o*/ vec![1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0],
-        /*z*/ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        /* */ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    ];
-    assert_eq!(
-        ['H', 'o', 'o'].iter().collect::<Vec<_>>(),
-        gen_lcs(&lcs_table, &old, &new)
-    );
-    assert_eq!(expected, lcs_table);
-}
+    #[test]
+    fn should_create_table_with_strings() {
+        let old = ["H", "e", "l", "l", "o", " ", "w", "o", "r", "l", "d"];
+        let new = ["H", "a", "c", "k", "y", "i", "n", " ", "o", "o", "z"];
+        let lcs_table = create_table(&old, &new);
+        let expected = vec![
+            /* * * * * H  e  l  l  o  _  w  o  r  l  d  */
+            /*H*/ vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+            /*a*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+            /*c*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+            /*k*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+            /*y*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+            /*i*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+            /*n*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+            /*_*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+            /*o*/ vec![2, 2, 2, 2, 2, 1, 1, 1, 0, 0, 0, 0],
+            /*o*/ vec![1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0],
+            /*z*/ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            /* */ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ];
+        assert_eq!(
+            ["H", "o", "o"].iter().collect::<Vec<_>>(),
+            gen_lcs(&lcs_table, &old, &new)
+        );
+        assert_eq!(expected, lcs_table);
+    }
 
-#[test]
-fn should_create_table_with_numbers() {
-    let old = [1, 2, 3, 4];
-    let new = [2, 4];
-    let lcs_table = create_table(&old, &new);
-    let expected = vec![
-        vec![2, 2, 1, 1, 0],
-        vec![1, 1, 1, 1, 0],
-        vec![0, 0, 0, 0, 0],
-    ];
-    let res = gen_lcs(&lcs_table, &old, &new);
-    assert_eq!([2, 4].iter().collect::<Vec<_>>(), res);
-    assert_eq!(expected, lcs_table);
+    #[test]
+    fn should_create_table_with_chars() {
+        let old = ['H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd'];
+        let new = ['H', 'a', 'c', 'k', 'y', 'i', 'n', ' ', 'o', 'o', 'z'];
+        let lcs_table = create_table(&old, &new);
+        let expected = vec![
+            /* * * * * H  e  l  l  o  _  w  o  r  l  d  */
+            /*H*/ vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+            /*a*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+            /*c*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+            /*k*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+            /*y*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+            /*i*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+            /*n*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+            /*_*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+            /*o*/ vec![2, 2, 2, 2, 2, 1, 1, 1, 0, 0, 0, 0],
+            /*o*/ vec![1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0],
+            /*z*/ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            /* */ vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ];
+        assert_eq!(
+            ['H', 'o', 'o'].iter().collect::<Vec<_>>(),
+            gen_lcs(&lcs_table, &old, &new)
+        );
+        assert_eq!(expected, lcs_table);
+    }
+
+    #[test]
+    fn should_create_table_with_numbers() {
+        let old = [1, 2, 3, 4];
+        let new = [2, 4];
+        let lcs_table = create_table(&old, &new);
+        let expected = vec![
+            vec![2, 2, 1, 1, 0],
+            vec![1, 1, 1, 1, 0],
+            vec![0, 0, 0, 0, 0],
+        ];
+        let res = gen_lcs(&lcs_table, &old, &new);
+        assert_eq!([2, 4].iter().collect::<Vec<_>>(), res);
+        assert_eq!(expected, lcs_table);
+    }
 }
