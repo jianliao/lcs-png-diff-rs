@@ -188,13 +188,11 @@ pub fn diff(
     let before_w = before_png.dimensions().0;
     let before_encoded_png: Vec<String> = before_png
         .as_bytes()
-        .to_vec()
         .chunks(before_w as usize * 4)
         .map(encode)
         .collect();
     let after_encoded_png: Vec<String> = after_png
         .as_bytes()
-        .to_vec()
         .chunks(after_w as usize * 4)
         .map(encode)
         .collect();
@@ -294,7 +292,8 @@ fn should_create_table_with_strings2() {
     let lcs_table = create_table(&old, &new);
     let expected = vec![
         /* * * * * H  e  l  l  o  _  w  o  r  l  d  */
-        /*H*/ vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*H*/
+        vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*a*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*c*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*k*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
@@ -321,7 +320,8 @@ fn should_create_table_with_strings() {
     let lcs_table = create_table(&old, &new);
     let expected = vec![
         /* * * * * H  e  l  l  o  _  w  o  r  l  d  */
-        /*H*/ vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*H*/
+        vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*a*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*c*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*k*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
@@ -348,7 +348,8 @@ fn should_create_table_with_chars() {
     let lcs_table = create_table(&old, &new);
     let expected = vec![
         /* * * * * H  e  l  l  o  _  w  o  r  l  d  */
-        /*H*/ vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
+        /*H*/
+        vec![3, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*a*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*c*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
         /*k*/ vec![2, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0],
