@@ -186,16 +186,16 @@ pub fn diff(
 ) -> Result<DynamicImage, DecodeError> {
     let after_w = after_png.dimensions().0;
     let before_w = before_png.dimensions().0;
-    let before_encoded_png: Vec<String> = before_png
+    let before_encoded_png = before_png
         .as_bytes()
         .chunks(before_w as usize * 4)
         .map(encode)
-        .collect();
-    let after_encoded_png: Vec<String> = after_png
+        .collect::<Vec<String>>();
+    let after_encoded_png = after_png
         .as_bytes()
         .chunks(after_w as usize * 4)
         .map(encode)
-        .collect();
+        .collect::<Vec<String>>();
 
     let diff_result = lcs_diff(&before_encoded_png, &after_encoded_png);
 
@@ -269,11 +269,11 @@ mod tests {
         let old = [
             255, 255, 255, 5, 167, 167, 133, 7, 133, 71, 132, 4, 255, 255, 255, 10,
         ];
-        let old_chunks: Vec<String> = old.to_vec().chunks(4).map(encode).collect();
+        let old_chunks = old.to_vec().chunks(4).map(encode).collect::<Vec<String>>();
         let new = [
             255, 255, 255, 5, 133, 71, 132, 4, 167, 167, 133, 7, 255, 255, 255, 10,
         ];
-        let new_chunks: Vec<String> = new.to_vec().chunks(4).map(encode).collect();
+        let new_chunks = new.to_vec().chunks(4).map(encode).collect::<Vec<String>>();
         let lcs_table = create_table(&old_chunks, &new_chunks);
         assert_eq!(
             vec!["////BQ==", "p6eFBw==", "////Cg=="],
